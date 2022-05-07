@@ -1,0 +1,117 @@
+import Foundation
+
+var num1 = 5
+var num2 = 10
+print("\(num1) + \(num2) = \(num1 + num2)")
+
+let pg = "Gdansk University of Technology"
+var pg2 = ""
+// Simpler method
+// pg2 = pg.replacingOccurrences(of: "n", 
+//                                with: "⭐️")
+for letter in pg{
+  if letter == "n"{
+    pg2 += "⭐️"
+  }
+  else{
+    pg2.append(letter)
+  }
+}
+print(pg2)
+
+
+let name = "Michal Wrzosek"
+let reversed_name = String(name.reversed())
+print(name + " -> " + reversed_name)
+
+for _ in 1...11{
+  print("I will pass this course with best mark because Swift is great!")
+}
+
+let N = 4
+for i in 1...N{
+  print(i*i)
+}
+
+for _ in 1...N{
+  for _ in 1...N{
+    print("@", terminator: "")
+  }
+  print()
+}
+
+var numbers = [5, 10, 20, 15, 80, 13]
+var max:Int = 0
+for num in numbers{
+  if num > max{
+    max = num
+  }
+}
+print(max)
+
+for i in (0...numbers.count - 1).reversed(){
+  if i != 0{
+    print(numbers[i], terminator: "")
+    print(", ", terminator: "")
+  }
+  else{
+    print(numbers[i])
+  }
+}
+
+var allNumbers = [10, 20, 10, 11, 13, 20, 10, 30]
+var uniqueNumbers = [Int]()
+for num in allNumbers{
+  if !uniqueNumbers.contains(num){
+    uniqueNumbers.append(num)
+  }
+}
+print(uniqueNumbers)
+
+var number = 10
+var divisors = Set<Int>()
+for num in 1...number{
+  if number % num == 0{
+    divisors.insert(num)
+  }
+}
+print(divisors.sorted())
+
+var flights: [[String: String]] = [
+    [
+        "flightNumber" : "AA8025",
+        "destination" : "Copenhagen"
+    ],
+    [
+        "flightNumber" : "BA1442",
+        "destination" : "New York"
+    ],
+    [
+        "flightNumber" : "BD6741",
+        "destination" : "Barcelona"
+    ]
+]
+var flightNumbers = [String]()
+for flight in flights{
+  for data in flight{
+    if data.key == "flightNumber"{
+      flightNumbers.append(data.value)
+    }
+  }
+}
+print(flightNumbers)
+
+var names = ["Hommer","Lisa","Bart"]
+var fullName: [[String:String]] = []
+for name in names{
+  var person = [String:String]()
+  person["lastName"] = "Simpson"
+  person["firstName"] = name
+  fullName.append(person)
+}
+print(fullName)
+
+
+
+
+

@@ -1,0 +1,126 @@
+//Function
+func minValue(_ a: Int, _ b: Int) -> Int{
+  if a<b{
+    return a
+  }
+  return b
+}
+
+func lastDigit(_ a:Int) -> Int{
+  return a%10
+}
+
+func divides(_ a: Int, _ b: Int ) -> Bool{
+  if a%b == 0{
+    return true
+  }
+  return false
+}
+
+func countDivisors(_ a: Int) -> Int{
+  var divCount = 0
+  for i in 1...a{
+    if divides(a, i){
+      divCount += 1
+    }
+  }
+  return divCount
+}
+
+func isPrime(_ a:Int) ->Bool{
+  if countDivisors(a) == 2 || a == 1 {
+    return true
+  }
+  return false
+}
+
+//Closures
+func smartBart(_ n:Int, f:() -> ()) -> Void{
+  for _ in 1...n{
+    f()
+  }
+}
+
+smartBart(4){
+  print("I will pass this course with best mark, because Swift is great!")
+}
+
+let numbers = [10, 16, 18, 30, 38, 40, 44, 50]
+print(numbers.filter{$0 % 4 == 0})
+print(numbers.reduce(Int.min){max($0, $1)})
+
+var strings = ["Gdansk", "University", "of", "Technology"]
+print(strings.reduce(""){$0 + $1 + " "})
+
+let num = [1, 2 ,3 ,4, 5, 6]
+let numOdd = num.filter{$0 % 2 != 0}
+let numOddSquares = numOdd.map{$0 * $0}
+let numOddSquaresSum = numOddSquares.reduce(0){$0 + $1}
+print(numOddSquaresSum)
+
+//Tuples
+func minmax(_ a:Int, _ b:Int) ->(Int, Int){
+  if a > b{
+    return (b, a)
+  }
+  return (a, b)
+}
+
+var stringsArray = ["gdansk", "university", "gdansk", "university", "university", "of",  "technology", "technology", "gdansk", "gdansk"]
+var countedStrings:[(String,Int)] = []
+for string in stringsArray{
+  var contains = false
+  for unique in countedStrings{
+    if unique.0 == string{
+      contains = true
+    }
+  }
+  if contains{
+    for i in 0...countedStrings.count - 1{
+      if countedStrings[i].0 == string{
+        countedStrings[i].1 += 1
+      }
+    }
+  }
+  else{
+    countedStrings.append((string, 1))
+  }
+}
+print(countedStrings)
+
+//Enums
+enum Day: Int{
+  case Monday = 1
+  case Tuesday = 2
+  case Wednesday = 3
+  case Thursday = 4
+  case Friday = 5
+  case Saturday = 6
+  case Sunday = 7
+
+  func dayEmoji() -> Void{
+    switch self{
+      case .Monday:
+        print("💀")
+      case .Tuesday:
+        print("😭")
+      case .Wednesday:
+        print("😳")
+      case .Thursday:
+        print("😏")
+      case .Friday:
+        print("😎")
+      case .Saturday:
+        print("😁")
+      case .Sunday:
+        print("😪")
+    }
+  }
+}
+var day = Day.Monday
+day.dayEmoji()
+
+
+
+
+

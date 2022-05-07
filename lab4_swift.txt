@@ -1,0 +1,139 @@
+class Post{
+  var header: Header
+  var title: String
+  var content: String
+  var feedback: Feedback
+  init(_ header: Header, _ title: String, _ content: String, _ feedback: Feedback){
+    self.title = title
+    self.header = header
+    self.content = content
+    self.feedback = feedback
+  }
+
+  func printPost(){
+    print("\(headString(header, false))\(title)\n\(content)\n\(feedString(feedback))")
+  }
+}
+class PostSharing: Post{
+  var shareHeader: Header
+  var shareTitle: String
+  var shareContent: String
+  var shareFeedback: Feedback
+  init(_ shareHeader: Header, _ shareTitle: String, _ shareContent: String, _ shareFeedback: Feedback, _ header: Header, _ title: String, _ content: String, _ feedback: Feedback){
+    self.shareHeader = shareHeader
+    self.shareTitle = shareTitle
+    self.shareContent = shareContent
+    self.shareFeedback = shareFeedback
+    super.init(header, title, content, feedback)
+  }
+
+  func printSharingPost(){
+    print("\(headString(shareHeader, false))\(shareTitle)\n\(shareContent)\n\t\(headString(header, true))\t\(title)\n\t\(content)\n\t\(feedString(feedback))\(feedString(shareFeedback))")
+  }
+}
+struct Header{
+  var subreddit: String
+  var author: String
+  var date: Date
+  var awards: [Award]
+}
+struct Date{
+  var day: Int
+  var month: Int
+  var year: Int
+}
+struct Award{
+  var name: String
+  var count: Int
+}
+struct Feedback{
+  var upvotes: Int
+  var downvotes: Int
+  var comments: Int
+}
+
+enum Emoji:String{
+  case silver
+  case gold
+  case platinum
+  func getEmoji() -> String{
+    var emoji:String = ""
+    switch self{
+      case .silver:
+        emoji = "🥈"
+      case .gold:
+        emoji = "🥇"
+      case .platinum:
+        emoji = "💎"
+    }
+    return emoji
+  }
+}
+
+func headString(_ header: Header, _ isShared: Bool) -> String{
+  if(isShared){
+    return "r/\(header.subreddit)\n\tu/\(header.author) • \(dateString(header.date))\n\t\(awardString(header.awards))\n"
+  }
+  return "r/\(header.subreddit)\nu/\(header.author) • \(dateString(header.date))\n\(awardString(header.awards))\n"
+}
+func dateString(_ date: Date) -> String{
+  var result:String = ""
+  if(date.day < 10){
+    result += "0"
+  }
+  result += "\(date.day)."
+  if(date.month < 10){
+    result += "0"
+  }
+  result += "\(date.month).\(date.year)"
+  return result
+}
+func awardString(_ awards: [Award]) -> String{
+  var result:String = ""
+  var count:Int = 0
+  for award in awards{
+    let name = Emoji(rawValue: award.name) ?? Emoji.silver
+    result += name.getEmoji()
+    count += award.count
+  }
+  if(count == 0){
+    return ""
+  }
+  result += " \(count) Award"
+  if(count > 1){
+    result += "s"
+  }
+  return result
+}
+func feedString(_ feedback: Feedback) -> String{
+  var result:String = ""
+  var reactions:Int = 0
+  reactions += feedback.upvotes - feedback.downvotes
+  result += "⬆ \(reactions) ⬇  |  💬 \(feedback.comments)\n"
+  return result
+}
+
+
+//Post example
+var postHeader = Header(subreddit: "slugfacts", author: "jeff", date: Date(day: 26, month: 4, year: 2022), awards: [Award(name: "gold", count: 2), Award(name: "silver", count: 3)])
+var postContent = "Did you know that the severed head of a sea slug can grow a whole new body?"
+var postFeedback = Feedback(upvotes: 1592, downvotes: 367, comments: 140)
+var post = Post(postHeader, "Sea slug special ability", postContent, postFeedback)
+post.printPost()
+//Shared post example
+var sharingPostHeader = Header(subreddit: "slugenemies", author: "bob", date: Date(day: 27, month: 4, year: 2022), awards: [Award(name: "platinum", count: 1)])
+var sharingPostContent = "We have to do something about it."
+var sharingPostFeedback = Feedback(upvotes: 619, downvotes: 72, comments: 53)
+var sharingPost = PostSharing(sharingPostHeader, "Bad news", sharingPostContent, sharingPostFeedback, postHeader, "Sea slug special ability", postContent, postFeedback)
+sharingPost.printSharingPost()
+
+
+
+
+
+
+
+
+
+
+

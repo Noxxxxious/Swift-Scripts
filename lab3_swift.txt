@@ -1,0 +1,185 @@
+import Foundation
+
+class City{
+  var id: Int
+  var name: String
+  var description: String
+  var lat: Float
+  var lon: Float
+  var tags = [String]()
+  var locations = [Location]()
+
+  init(_ id: Int, _ name: String, _ description: String, _ latitude: Float, _ longitude: Float, _ tags: [String], _ locations: [Location]){
+    self.id = id
+    self.name = name
+    self.description = description
+    self.lat = latitude
+    self.lon = longitude
+    self.tags = tags
+    self.locations = locations
+  }
+}
+
+class Location{
+  var id: Int
+  var type: String
+  var name: String
+  var rating: Int
+
+  init(_ id: Int, _ type: String, _ name: String, _ rating: Int){
+    self.id = id
+    self.type = type
+    self.name = name
+    self.rating = rating
+  }
+}
+
+func printCities(_ cities: [City]){
+  for city in cities{
+    print("[ID:\(city.id)]\(city.name) - \(city.description)")
+  }
+  print()
+}
+
+func findNamed(_ cityName: String, _ cities: [City]) -> [City]{
+  var result = [City]()
+  for city in cities{
+    if(city.name == cityName){
+      result.append(city)
+    }
+  }
+  return result
+}
+
+func findTagged(_ key: String, _ cities: [City]) -> [City]{
+  var result = [City]()
+  for city in cities{
+    for tag in city.tags{
+      if(tag == key){
+        result.append(city)
+      }
+    }
+  }
+  return result
+}
+
+func distance(_ c1: City, _ c2: City) -> Float{
+  let R: Float = 6371.0 //Earth's radius
+  let fi1 = c1.lat * Float.pi / 180.0
+  let fi2 = c2.lat * Float.pi / 180.0
+  let dfi = (c2.lat - c1.lat) * Float.pi / 180.0
+  let dlambda = (c2.lon - c1.lon) * Float.pi / 180.0
+  let a = sin(dfi/2.0) * sin(dfi/2.0) + cos(fi1) * cos(fi2) * sin(dlambda/2.0) * sin(dlambda/2.0)
+  let c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a))
+  let distance = R * c
+  return distance
+} 
+
+func closestFarthestFrom(_ lat: Float, _ lon: Float, _ cities: [City]){
+  let dummy = City(0, "", "", lat, lon, [], [])
+  var dist_arr = [(Float, String)]()
+  for city in cities{
+    dist_arr.append((distance(dummy, city), city.name))
+  }
+  let c = dist_arr.min{$0.0 < $1.0}
+  let f = dist_arr.max{$0.0 < $1.0}
+  print("For latitude: \(lat) and longitude: \(lon)")
+  print("The closest city is \(c!.1) at \(c!.0)km")
+  print("The farthest city is \(f!.1) at \(f!.0)km\n")
+}
+
+func farthest(_ cities: [City]){
+  var dist_arr = [(Float, String, String)]()
+  for city1 in cities{
+    for city2 in cities{
+      if(city1.id != city2.id){
+        dist_arr.append((distance(city1, city2), city1.name, city2.name))
+      }
+    }
+  }
+  let f = dist_arr.max{$0.0 < $1.0}
+  print("The farthest cities in array are \(f!.1) and \(f!.2) at \(f!.0)km\n")
+}
+
+func printLocations(_ locations: [Location]){
+  for location in locations{
+    print("[ID:\(location.id)]\(location.name) - \(location.type), rating: \(location.rating)")
+  }
+}
+
+func printFiveStar(_ cities: [City]){
+  var result = [City]()
+  for city in cities{
+    for loc in city.locations{
+      if(loc.type == "restaurant" && loc.rating == 5){
+        result.append(city)
+      }
+    }
+  }
+  print("Cities with 5 star restaurants:")
+  printCities(result)
+}
+
+func getLocations(_ city: City) -> [Location]{
+  print("\(city.name) locations sorted by rating:")
+  var locations = city.locations
+  locations.sort{$0.rating > $1.rating}
+  return locations
+}
+
+func printFiveStarCount(_ cities: [City]){
+  for city in cities{
+    var locations = [Location]()
+    var count = 0
+    for loc in city.locations{
+      if(loc.rating == 5){
+        count += 1
+        locations.append(loc)
+      }
+    }
+    print("\(city.name) has \(count) 5-star locations:")
+    printLocations(locations)
+  }
+}
+
+var cities:[City] = [
+  City(1, "Gdansk", "Port city on the Baltic Sea", 54.372158, 18.638306, ["sea", "crane", "shipyard"], [Location(1, "restaurant", "Aioli", 4), Location(2, "restaurant", "Manekin", 5), Location(3, "monument", "Fontanna Neptuna", 3)]),
+  City(2, "Berlin", "Capital city of Germany ", 52.520008, 13.404954, ["wurst", "wall", "beer"], [Location(4, "building", "Brandenburg Gate", 4), Location(5, "building", "Berlin Cathedral", 3), Location(6, "museum", "New Museum", 4)]),
+  City(3, "Prague", "Capital city of Czech Republic", 50.073658, 14.418540, ["oldtown", "castle", "food"], [Location(7, "restaurant", "Mlýnec", 5), Location(8, "monument", "Astronomical Clock", 5), Location(9, "building", "Charles Bridge", 2)]),
+  City(4, "Amsterdam", "Capital city of Netherlands", 	52.377956, 4.897070, ["river", "bike", "bridge"], [Location(10, "restaurant", "Flore", 5), Location(11, "museum", "Rijksmuseum", 4), Location(12, "park", "Flevopark", 5)]),
+  City(5, "Paris", "Capital city of France", 48.864716, 2.349014, ["eiffel", "art", "baguette"], [Location(13, "building", "Louvre Palace", 5), Location(14, "museum", "Musée des Arts et Métiers", 3), Location(15, "park", "Park Monceau", 4)]),
+  City(6, "Madrid", "Capital city of Spain", 40.416775, -3.703790, ["dance", "tacos", "bulls"], [Location(16, "museum", "Prado museum", 4), Location(17, "park", "El Retiro park", 5), Location(18, "restaurant", "DiverXO", 3)]),
+  City(7, "Lisbon", "Capital city of Portugal", 38.695927, -9.194453, ["nature", "sea", "sport"],[Location(19, "building", "Belem Tower", 3), Location(20, "restaurant", "Loco", 2), Location(21, "musem", "MAAT", 4)]),
+  City(8, "London", "Capital city of England", 	51.509865, -0.118092, ["river", "bigben", "guard"],  [Location(22, "museum", "Tate Modern", 4), Location(23, "restaurant", "Lahpet West End", 1), Location(24, "restaurant", "Rita’s", 2)]),
+  City(9, "Oslo", "Capital city of Norway", 59.911491, 	10.757933, ["snow", "sport", "viking"], [Location(25, "museum", "National Gallery", 1), Location(26, "park", "Ekebergparken", 4), Location(27, "restaurant", "Vaaghals", 5)]),
+  City(10, "Stockholm", "Capital city of Sweden", 	59.334591, 18.063240, ["bridge", "river", "museum"], [Location(28, "museum", "Djurgården", 4), Location(29, "club", "Trädgården", 2), Location(30, "restaurant", "SoFo", 3)]),
+  City(11, "Rome", "Capital city of Italy", 41.902782, 	12.496366, ["pizza", "pasta", "colosseum"], [Location(31, "building", "Colosseum", 5), Location(32, "restaurant", "Pizzeria Boccaccia", 5), Location(33, "monument", "Pantheon", 4)]),
+  City(12, "New York", "City in the USA with the highest population", 	40.730610, -73.935242, ["taxi", "metro", "skyscraper"], [Location(34, "restaurant", "Peter Luger", 3), Location(35, "plaza", "Times Square", 4), Location(36, "park", "Central Park", 3)]),
+  City(13, "Miami", "City in Florida on the coast of the Atlantic Ocean", 	25.761681, -80.191788, ["beach", "sea", "palmtree"], [Location(37, "beach", "Miami Beach", 2), Location(38, "street", "Art Deco", 1), Location(39, "museum", "Perez Art Museum", 4)]),
+  City(14, "Athens", "Capital city of Greece", 	37.983810, 	23.727539, ["ancient", "art", "food"], [Location(40, "monument", "Acropolis", 4), Location(41, "park", "The National Gardes", 5), Location(42, "restaurant", "Klimataria", 3)]),
+  City(15, "Seoul", "Capital city of South Korea", 37.532600, 127.024612, ["food", "nightlife", "temple"], [Location(43, "building", "Changdeokgung Palace", 5), Location(44, "restaurant", "Jungsik Seoul", 4), Location(45, "restaurant", "La Yeon", 5)]),
+  City(16, "Tokyo", "Capital city of Japan", 35.652832, 139.839478, ["sushi", "technology", "cherryblossoms"], [Location(46, "plaza", "Shibuya Crossing", 4), Location(47, "building", "Sensoji Temple", 5), Location(48, "plaza", "Akihabara", 5), Location(49, "restaurant", "Ise Sueyoshi", 5)]),
+  City(17, "Kyoto", "City in the western part of the Japanese island of Honshu", 35.011665, 135.768326, ["culture", "tourism", "temple"], [Location(50, "building", "Nijo Castle", 4), Location(51, "monument", "Fushimi Inari-Taisha Shrine", 5), Location(52, "building", "Byōdō-in Temple", 5)]),
+  City(18, "Beijing", "Capital city of China", 39.916668, 116.383331, ["skyscrapers", "temple", "food"], [Location(53, "building", "The Great Wall of China", 4), Location(54, "plaza", "Tiananmen Square", 3), Location(55, "park", "Beihai Park", 5)]),
+  City(19, "Rio de Janeiro", "The largest city in Brazil", -22.970722, -43.182365, ["music", "carnival", "beach"], [Location(56, "monument", "Cristo Redentor", 4), Location(57, "beach", "Copacabana", 5), Location(58, "park", "Tijuca National Park", 4)]),
+  City(20, "Nairobi", "Capital city of Kenya", 	-1.286389, 36.817223, ["nature", "tourism", "wildlife"], [Location(59, "park", "Nairobi National Park", 4), Location(60, "museum", "Karen Blixen Museum", 2), Location(61, "plaza", "Kenyatta International Conference Centre", 3)])
+]
+
+//Search
+printCities(findNamed("Rome", cities))
+printCities(findTagged("sea", cities))
+
+//Distance
+print("Distane between \(cities[5].name) and \(cities[15].name) is \(distance(cities[5], cities[15]))km\n")
+//I used Dublin coordinates here to validate the result
+closestFarthestFrom(53.350140, -6.266155, cities)
+farthest(cities)
+
+//Advanced search
+printFiveStar(cities)
+let locations = getLocations(cities[6])
+printLocations(locations)
+print()
+printFiveStarCount(cities)
+
+
