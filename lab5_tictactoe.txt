@@ -1,0 +1,31 @@
+import Foundation
+
+class TicTacToe{
+  var gameBoard: [[String]]
+
+  init(){
+    let row = Array(repeating: "_", count: 3)
+    self.gameBoard = Array(repeating: row, count: 3)
+  }
+
+  func draw(){
+    for row in gameBoard{
+      for field in row{
+        print(field + " ", terminator: "")
+      }
+      print()
+    }
+  }
+
+  func move(_ symbol: String, _ field: Int){
+    self.gameBoard[field/3][field % 3] = symbol
+  }
+}
+
+struct Field{
+  var symbol: String
+}
+
+var ttt = TicTacToe()
+ttt.move("x", 7)
+ttt.draw()
