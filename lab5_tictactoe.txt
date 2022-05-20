@@ -47,9 +47,9 @@ class TicTacToe{
   
   func playerMove(){
     var input = ""
-    while(!isValid(input)){
+    repeat {
       input = readLine()!
-    }
+    } while(!isValid(input))
     let move = Int(input)!
     self.gameBoard[move/3][move % 3] = self.currentPlayer
     self.changePlayer()
@@ -87,8 +87,9 @@ class TicTacToe{
   
   func isValid(_ input: String) -> Bool {
     var digits = CharacterSet.decimalDigits
+    let possibleMoves = getPossibleMoves()
     digits.remove("9")
-    return CharacterSet(charactersIn: input).isSubset(of: digits) && input.count == 1
+    return CharacterSet(charactersIn: input).isSubset(of: digits) && possibleMoves.contains(Int(input)!) && input.count == 1
   }
 }
 
