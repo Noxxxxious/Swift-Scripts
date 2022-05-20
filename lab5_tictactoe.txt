@@ -2,10 +2,21 @@ import Foundation
 
 class TicTacToe{
   var gameBoard: [[String]]
-
+  var currentPlayer: String
+  var gameOver: Bool
   init(){
     let row = Array(repeating: "_", count: 3)
     self.gameBoard = Array(repeating: row, count: 3)
+    self.currentPlayer = "x"
+    self.gameOver = false
+  }
+
+  func gameLoop(){
+    self.printTutorial()
+    while(!self.gameOver){
+      self.move()
+      self.draw()
+    }
   }
 
   func draw(){
@@ -17,15 +28,70 @@ class TicTacToe{
     }
   }
 
-  func move(_ symbol: String, _ field: Int){
-    self.gameBoard[field/3][field % 3] = symbol
+  func printTutorial(){
+    print("\t---Game of TicTacToe---")
+    print("Type numbers from 0 to 8 to mark a field. Numbers correspond to squares as shown below.")
+    print("0 1 2\n3 4 5\n6 7 8\n")
+  }
+
+  func move(){
+    if(self.currentPlayer == "x"){
+      print("Your move:")
+      playerMove()
+    }
+    else{
+      print("AI move:")
+      aiMove()
+    }
+  }
+  
+  func playerMove(){
+    var input = ""
+    while(!isValid(input)){
+      input = readLine()!
+    }
+    let move = Int(input)!
+    self.gameBoard[move/3][move % 3] = self.currentPlayer
+    self.changePlayer()
+  }
+
+  func aiMove(){
+    let possibleMoves = getPossibleMoves()
+    let move = possibleMoves.randomElement()!
+    self.gameBoard[move/3][move % 3] = self.currentPlayer
+    self.changePlayer()
+  }
+
+  func changePlayer(){
+    if(self.currentPlayer == "x"){
+      self.currentPlayer = "o"
+    } 
+    else{
+      self.currentPlayer = "x"
+    }
+  }
+
+  func getPossibleMoves() -> Set<Int>{
+    var moves:Set = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    var i = 0
+    for row in gameBoard{
+      for field in row{
+        if(field != "_"){
+          moves.remove(i)
+        }
+        i += 1
+      }
+    }
+    return moves
+  }
+  
+  func isValid(_ input: String) -> Bool {
+    var digits = CharacterSet.decimalDigits
+    digits.remove("9")
+    return CharacterSet(charactersIn: input).isSubset(of: digits) && input.count == 1
   }
 }
 
-struct Field{
-  var symbol: String
-}
 
 var ttt = TicTacToe()
-ttt.move("x", 7)
-ttt.draw()
+ttt.gameLoop()
