@@ -4,11 +4,13 @@ class TicTacToe{
   var gameBoard: [[String]]
   var currentPlayer: String
   var gameOver: Bool
+  var winner: String
   init(){
     let row = Array(repeating: "_", count: 3)
     self.gameBoard = Array(repeating: row, count: 3)
     self.currentPlayer = "x"
     self.gameOver = false
+    self.winner = ""
   }
 
   func gameLoop(){
@@ -16,7 +18,9 @@ class TicTacToe{
     while(!self.gameOver){
       self.move()
       self.draw()
+      self.scanBoard()
     }
+    self.printResult()
   }
 
   func draw(){
@@ -32,6 +36,15 @@ class TicTacToe{
     print("\t---Game of TicTacToe---")
     print("Type numbers from 0 to 8 to mark a field. Numbers correspond to squares as shown below.")
     print("0 1 2\n3 4 5\n6 7 8\n")
+  }
+
+  func printResult(){
+    if(!self.winner.isEmpty){
+      print("\(self.winner) won.")
+    }
+    else{
+      print("Draw.")
+    }
   }
 
   func move(){
@@ -51,15 +64,13 @@ class TicTacToe{
       input = readLine()!
     } while(!isValid(input))
     let move = Int(input)!
-    self.gameBoard[move/3][move % 3] = self.currentPlayer
-    self.changePlayer()
+    markField(move)
   }
 
   func aiMove(){
     let possibleMoves = getPossibleMoves()
     let move = possibleMoves.randomElement()!
-    self.gameBoard[move/3][move % 3] = self.currentPlayer
-    self.changePlayer()
+    markField(move)
   }
 
   func changePlayer(){
@@ -68,6 +79,35 @@ class TicTacToe{
     } 
     else{
       self.currentPlayer = "x"
+    }
+  }
+
+  func markField(_ move: Int){
+    self.gameBoard[move/3][move % 3] = self.currentPlayer
+    self.changePlayer()
+  }
+  
+  func scanBoard(){
+    //iter rows
+    for row in self.gameBoard{
+      if(row[0] == row[1] && row[0] == row[2] && row[0] != "_"){
+        self.gameOver = true
+        self.winner = row[0]
+      } 
+    }
+    //iter cols
+    for i in 0...self.gameBoard.count - 1{
+      if(self.gameBoard[0][i] == self.gameBoard[1][i] && self.gameBoard[0][i] == self.gameBoard[2][i] && self.gameBoard[0][i] != "_"){
+        self.gameOver = true
+        self.winner = self.gameBoard[0][i]
+      }
+    }
+    //diags
+    if(self.gameBoard[1][1] != "_"){
+      if((self.gameBoard[1][1] == self.gameBoard[0][0] && self.gameBoard[1][1] == self.gameBoard[2][2]) || (self.gameBoard[1][1] == self.gameBoard[0][2] && self.gameBoard[1][1] == self.gameBoard[2][0])){
+        self.gameOver = true
+        self.winner = self.gameBoard[1][1]
+      }
     }
   }
 
