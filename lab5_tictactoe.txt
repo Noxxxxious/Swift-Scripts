@@ -18,7 +18,7 @@ class TicTacToe{
     while(!self.gameOver){
       self.move()
       self.draw()
-      self.scanBoard()
+      self.scanBoard(self.gameBoard)
     }
     self.printResult()
   }
@@ -86,27 +86,13 @@ class TicTacToe{
     self.gameBoard[move/3][move % 3] = self.currentPlayer
     self.changePlayer()
   }
-  
-  func scanBoard(){
-    //iter rows
-    for row in self.gameBoard{
-      if(row[0] == row[1] && row[0] == row[2] && row[0] != "_"){
+
+  func scanBoard(_ board: [[String]]){
+    let subsets = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    for s in subsets{
+      if(board[s[0]/3][s[0]%3] == board[s[1]/3][s[1]%3] && board[s[0]/3][s[0]%3] == board[s[2]/3][s[2]%3] && board[s[0]/3][s[0]%3] != "_"){
         self.gameOver = true
-        self.winner = row[0]
-      } 
-    }
-    //iter cols
-    for i in 0...self.gameBoard.count - 1{
-      if(self.gameBoard[0][i] == self.gameBoard[1][i] && self.gameBoard[0][i] == self.gameBoard[2][i] && self.gameBoard[0][i] != "_"){
-        self.gameOver = true
-        self.winner = self.gameBoard[0][i]
-      }
-    }
-    //diags
-    if(self.gameBoard[1][1] != "_"){
-      if((self.gameBoard[1][1] == self.gameBoard[0][0] && self.gameBoard[1][1] == self.gameBoard[2][2]) || (self.gameBoard[1][1] == self.gameBoard[0][2] && self.gameBoard[1][1] == self.gameBoard[2][0])){
-        self.gameOver = true
-        self.winner = self.gameBoard[1][1]
+        self.winner = board[s[0]/3][s[0]%3]
       }
     }
   }
