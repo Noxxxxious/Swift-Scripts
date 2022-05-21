@@ -5,22 +5,14 @@ class TicTacToe{
   var currentPlayer: String
   var gameOver: Bool
   var winner: String
+  var difficulty: String
   init(){
     let row = Array(repeating: "_", count: 3)
     self.gameBoard = Array(repeating: row, count: 3)
     self.currentPlayer = "x"
     self.gameOver = false
     self.winner = ""
-  }
-
-  func gameLoop(){
-    self.printTutorial()
-    while(!self.gameOver){
-      self.move()
-      self.draw()
-      self.scanBoard(self.gameBoard)
-    }
-    self.printResult()
+    self.difficulty = "easy"
   }
 
   func draw(){
@@ -30,6 +22,22 @@ class TicTacToe{
       }
       print()
     }
+    if(self.gameOver){
+      if(self.winner.isEmpty){
+        print("Game result: Draw.")
+      }
+      else{
+        print("Game result: \(self.winner) won.")
+      }
+    }
+    else{
+      if(self.currentPlayer == "x"){
+        print("\nYour move:")
+      }
+      else{
+        print("\nAi move:")
+      }
+    }
   }
 
   func printTutorial(){
@@ -38,39 +46,28 @@ class TicTacToe{
     print("0 1 2\n3 4 5\n6 7 8\n")
   }
 
-  func printResult(){
-    if(!self.winner.isEmpty){
-      print("\(self.winner) won.")
-    }
-    else{
-      print("Draw.")
-    }
-  }
-
-  func move(){
-    if(self.currentPlayer == "x"){
-      print("Your move:")
-      playerMove()
-    }
-    else{
-      print("AI move:")
-      aiMove()
-    }
-  }
-  
-  func playerMove(){
+  func chooseDifficulty(){
+    print("Choose difficulty: 1 - easy, 2 - hard")
     var input = ""
     repeat {
       input = readLine()!
-    } while(!isValid(input))
+    } while(!(input == "1" || input == "2"))
+    self.difficulty = input
+  }
+  
+  func playerMove() -> Int{
+    var input = ""
+    repeat {
+      input = readLine()!
+    } while(!self.isValid(input))
     let move = Int(input)!
-    markField(move)
+    return move
   }
 
-  func aiMove(){
-    let possibleMoves = getPossibleMoves()
+  func randomMove() -> Int{
+    let possibleMoves = self.getPossibleMoves()
     let move = possibleMoves.randomElement()!
-    markField(move)
+    return move
   }
 
   func changePlayer(){
@@ -85,22 +82,32 @@ class TicTacToe{
   func markField(_ move: Int){
     self.gameBoard[move/3][move % 3] = self.currentPlayer
     self.changePlayer()
+    self.scanBoard()
   }
 
-  func scanBoard(_ board: [[String]]){
+  func scanBoard(){
     let subsets = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     for s in subsets{
-      if(board[s[0]/3][s[0]%3] == board[s[1]/3][s[1]%3] && board[s[0]/3][s[0]%3] == board[s[2]/3][s[2]%3] && board[s[0]/3][s[0]%3] != "_"){
+      if(self.gameBoard[s[0]/3][s[0]%3] == self.gameBoard[s[1]/3][s[1]%3] && self.gameBoard[s[0]/3][s[0]%3] == self.gameBoard[s[2]/3][s[2]%3] && self.gameBoard[s[0]/3][s[0]%3] != "_"){
         self.gameOver = true
-        self.winner = board[s[0]/3][s[0]%3]
+        self.winner = self.gameBoard[s[0]/3][s[0]%3]
       }
     }
+    for row in self.gameBoard{
+      for field in row{
+        if(field == "_"){
+          return
+        }
+      }
+    }
+    self.gameOver = true
+    self.winner = ""
   }
 
   func getPossibleMoves() -> Set<Int>{
     var moves:Set = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     var i = 0
-    for row in gameBoard{
+    for row in self.gameBoard{
       for field in row{
         if(field != "_"){
           moves.remove(i)
@@ -113,12 +120,109 @@ class TicTacToe{
   
   func isValid(_ input: String) -> Bool {
     var digits = CharacterSet.decimalDigits
-    let possibleMoves = getPossibleMoves()
+    let possibleMoves = self.getPossibleMoves()
     digits.remove("9")
     return CharacterSet(charactersIn: input).isSubset(of: digits) && possibleMoves.contains(Int(input)!) && input.count == 1
+  }
+
+  func copy() -> TicTacToe{
+    let ttt = TicTacToe()
+    ttt.gameBoard = self.gameBoard
+    ttt.currentPlayer = self.currentPlayer
+    ttt.gameOver = self.gameOver
+    ttt.winner = self.winner
+    return ttt
+  }
+  
+}
+
+class aiAgent{
+  var token: String
+  var firstmove: Bool
+  init(){
+    self.token = "o"
+    self.firstmove = true
+  }
+  func move(_ ttt: TicTacToe) -> Int{
+    let move = self.minmax(ttt).1
+    return move
+  }
+  func minmax(_ ttt: TicTacToe, _ maximizing: Bool = true, _ a:Int = Int.min, _ b: Int = Int.max) -> (Int, Int){
+    if(ttt.gameOver){
+      if(ttt.winner == "o"){
+        return (1, -1)
+      }
+      if(ttt.winner == "x"){
+        return (-1, -1)
+      }
+      return (0, -1)
+    }
+    var alpha = a
+    var beta = b
+    if(maximizing){
+      var best_result = Int.min
+      var best_move = -1
+      for move in ttt.getPossibleMoves(){
+        let ttt_copy = ttt.copy()
+        ttt_copy.markField(move)
+        let result = minmax(ttt_copy, false, alpha, beta)
+        if (result.0 > best_result){
+          best_result = result.0
+          best_move = move
+        }
+        alpha = [alpha, best_result].max()!
+        if(alpha >= beta){
+          break
+        }
+      }
+      return (best_result, best_move)
+    }
+    else{
+      var best_result = Int.max
+      var best_move = -1
+      for move in ttt.getPossibleMoves(){
+        let ttt_copy = ttt.copy()
+        ttt_copy.markField(move)
+        let result = minmax(ttt_copy, true, alpha, beta)
+        if (result.0 < best_result){
+          best_result = result.0
+          best_move = move
+        }
+        beta = [beta, best_result].min()!
+        if(alpha >= beta){
+          break
+        }
+      }
+      return (best_result, best_move)
+    }
   }
 }
 
 
-var ttt = TicTacToe()
-ttt.gameLoop()
+var choice:String
+var ai = aiAgent()
+repeat{
+  let ttt = TicTacToe()
+  ttt.printTutorial()
+  ttt.chooseDifficulty()
+  while(!ttt.gameOver){
+    ttt.draw()
+    var move:Int
+    if(ttt.currentPlayer == "x"){
+      move = ttt.playerMove()
+    }
+    else{
+      if(ttt.difficulty == "1"){
+        move = ttt.randomMove()
+      }
+      else{
+        move = ai.move(ttt)
+      } 
+    }
+    ttt.markField(move)
+  }
+  ttt.draw()
+  print("Do you want to play again? (Y - yes)")
+  choice = readLine()!
+} while(choice == "Y")
+
