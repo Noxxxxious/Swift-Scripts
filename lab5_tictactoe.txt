@@ -47,11 +47,11 @@ class TicTacToe{
   }
 
   func chooseDifficulty(){
-    print("Choose difficulty: 1 - easy, 2 - hard")
+    print("Choose difficulty: 1 - easy, 2 - medium, 3 - hard")
     var input = ""
     repeat {
       input = readLine()!
-    } while(!(input == "1" || input == "2"))
+    } while(!(input == "1" || input == "2" || input == "3"))
     self.difficulty = input
   }
   
@@ -213,7 +213,7 @@ repeat{
       move = ttt.playerMove()
     }
     else{
-      if(ttt.difficulty == "1"){
+      if(ttt.difficulty == "1" || (ttt.difficulty == "2" && Int.random(in: 0...2) == 0)){
         move = ttt.randomMove()
       }
       else{
