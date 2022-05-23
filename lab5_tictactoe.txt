@@ -91,6 +91,7 @@ class TicTacToe{
       if(self.gameBoard[s[0]/3][s[0]%3] == self.gameBoard[s[1]/3][s[1]%3] && self.gameBoard[s[0]/3][s[0]%3] == self.gameBoard[s[2]/3][s[2]%3] && self.gameBoard[s[0]/3][s[0]%3] != "_"){
         self.gameOver = true
         self.winner = self.gameBoard[s[0]/3][s[0]%3]
+        return
       }
     }
     for row in self.gameBoard{
