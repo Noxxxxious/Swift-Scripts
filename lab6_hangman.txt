@@ -1,0 +1,12 @@
+class WordGame{
+  var keyWord: String
+  var currWord: String
+  var availableLetters: Set<String>
+  var guesses: Int 
+  init(_ keyWord: String, _ difficulty: Int){
+    self.keyWord = keyWord
+    self.currWord = String(repeating: "_", count: keyWord.count)
+    self.availableLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    self.guesses = 16 - 2 * difficulty
+  }
+}
