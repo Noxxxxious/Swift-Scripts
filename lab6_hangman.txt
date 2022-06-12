@@ -3,7 +3,7 @@ class WordGame{
   var currWord: String
   var availableLetters: Set<String>
   var guesses: Int 
-  init(_ keyWord: String){
+  init(_ keyWord: String, _ difficulty: Int){
     self.keyWord = keyWord
     self.currWord = ""
     for letter in keyWord{
@@ -15,22 +15,16 @@ class WordGame{
       }
     }
     self.availableLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    self.guesses = 0
+    self.guesses = 16 - 2 * difficulty
   }
 
   func gameLoop(){
-    printInfo()
-    chooseDiff()
     while ((self.currWord != self.keyWord) && self.guesses != 0){
       print("\n\t\(self.currWord)\n")
-      guess()
       print("Guesses left: \(self.guesses)")
+      guess()
     }
     printResult()
-  }
-
-  func printInfo(){
-  print("This is a word guessing game. Your goal is to guess a word from a selected category by entering letters from your keyboard.\nYou can't choose the same letter twice. You can only make a certain amount of guesses. Good luck!\n")
   }
 
   func printResult(){
@@ -85,20 +79,35 @@ class WordGame{
     return String(charArray)
   }
 
-  func chooseDiff(){
-    print("Choose difficulty (1 - easy, 2 - medium, 3 - hard)")
-    var input:String
-    repeat{
-      input = readLine()!
-    } while(!(input == "1" || input == "2" || input == "3"))
-    self.guesses = 16 - 2 * Int(input)!
-  }
-
 }
 
-let countries: [String] = ["PORTUGAL", "SPAIN", "ANDORRA", "FRANCE", "ITALY", "VATICAN CITY", "SAN MARINO", "MONACO", "MALTA", "LUXEMBOURG", "BELGIUM", "NETHERLANDS", "IRELAND", "UNITED KINGDOM", "ICELAND", "DENMARK", "GERMANY", "SWITZERLAND", "LICHTENSTEIN", "AUSTRIA", "SLOVENIA", "CZECH REPUBLIC", "POLAND", "SLOVAKIA", "NORWAY", "SWEDEN", "FINLAND", "ESTONIA", "LATVIA", "LITHUANIA", "UKRAINE", "MOLDOVA", "HUNGARY", "CROATNIA", "BOSNIA AND HERZEGOVINA", "ROMANIA", "BULGARIA", "SERBIA", "NORTH MACEDONIA", "KOSOVO", "MONTENEGRO", "ALBANIA", "GREECE", "TURKEY"]
-let vegetables: [String] = ["CARROT", "TOMATO", "PEPPER", "POTATO", "ONION", "BROCCOLI", "CUCUMBER", "SALAD", "SPINACH"] 
-let categories: [[String]] = [countries, vegetables]
+func chooseCategory() -> Int{
+  print("Choose category:\n1 - countries\n2 - capital cities\n3 - vegetables\n4 - fruits")
+  var choice: String
+  repeat{
+  choice = readLine()!
+  } while(!(["1", "2", "3", "4"].contains(choice)))
+  return Int(choice)! - 1
+}
 
-var game = WordGame(countries.randomElement()!)
+func chooseDiff() -> Int{
+  print("Choose difficulty:\n1 - easy\n2 - medium\n3 - hard")
+  var input:String
+  repeat{
+    input = readLine()!
+  } while(!(["1", "2", "3"].contains(input)))
+  return Int(input)!
+}
+
+let countries: [String] = ["PORTUGAL", "SPAIN", "ANDORRA", "FRANCE", "ITALY", "VATICAN CITY", "SAN MARINO", "MONACO", "MALTA", "LUXEMBOURG", "BELGIUM", "NETHERLANDS", "IRELAND", "UNITED KINGDOM", "ICELAND", "DENMARK", "GERMANY", "SWITZERLAND", "LICHTENSTEIN", "AUSTRIA", "SLOVENIA", "CZECH REPUBLIC", "POLAND", "SLOVAKIA", "NORWAY", "SWEDEN", "FINLAND", "ESTONIA", "LATVIA", "LITHUANIA", "UKRAINE", "MOLDOVA", "HUNGARY", "CROATIA", "BOSNIA AND HERZEGOVINA", "ROMANIA", "BULGARIA", "SERBIA", "NORTH MACEDONIA", "KOSOVO", "MONTENEGRO", "ALBANIA", "GREECE", "TURKEY", "MEXICO", "CANADA", "GUATEMALA", "PANAMA", "VENEZUELA", "COLOMBIA", "BRAZIL", "PARAGUAY", "EGYPT", "TANZANIA", "ALGERIA", "MOROCCO", "CAMEROON", "SENEGAL", "ANGOLA", "KAZAKHSTAN", "IRAQ", "YEMEN", "SAUDI ARABIA", "JORDAN", "INDIA", "CHINA", "BANGLADESH", "LAOS", "VIETNAM", "SOUTH KOREA", "JAPAN", "NEW ZEALAND", "PALAU", "NAURU", "FIJI"]
+let capital_cities: [String] = ["LISBON", "MADRID", "ANDORRA", "PARIS", "ROME", "SAN MARINO", "MONACO", "VALLETTA", "LUXEMBOURG", "BRUSSELS", "AMSTERDAM", "DUBLIN", "LONDON", "REYKJAVIK", "COPENHAGEN", "BERLIN", "BERN", "VADUZ", "VIENNA", "LJUBLJANA", "PRAGUE", "WARSAW", "BRATISLAVA", "OSLO", "STOCKHOLM", "HELSINKI", "TALLINN", "RIGA", "VILNIUS", "KIEV", "CHISINAU", "BUDAPEST", "ZAGREB", "SARAJEVO", "BUCHAREST", "SOFIA", "BELGRADE", "SKOPJE", "PRISZTINA", "PODGORICA", "TIRANA", "ATHENS", "ANKARA", "MEXICO CITY", "OTTAWA", "BRASILIA", "BOGOTA", "CARACAS", "KAIR", "DAKAR", "RABAT", "BAGDAD", "RIJAD", "NEW DEHLI", "BEIJING", "HANOI", "SEOUL", "TOKYO", "WEELINGTON"]
+let vegetables: [String] = ["CARROT", "TOMATO", "PEPPER", "POTATO", "ONION", "BROCCOLI", "CUCUMBER", "LETTUCE", "SPINACH", "ASPARAGUS", "CAULIFLOWER", "CORN", "EGGPLANT", "PUMPKIN", "BEETROOT", "BRUSSEL SPROUT", "PEAS", "ZUCCHINI", "RADISH", "LEEK", "CABBAGE", "CELERY", "WASABI", "GREEN BEAN", "SOYBEANS", "GARLIC"]
+let fruits: [String] = ["BANANA", "STRAWBERRY", "GRAPE", "APPLE", "WATERMELON", "ORANGE", "BLUEBERRY", "LEMON", "PEACHES", "AVOCADOS", "PINEAPPLE", "CHERRY", "CANTALOUUPE", "RASPBERRY", "LIME", "PEAR", "BLACKBERRY", "CLEMENTINE", "MANGO", "PLUM", "KIWI", "TANGERINE", "MELON", "PAPAYA", "GRAPEFRUIT"]
+
+let categories: [[String]] = [countries, capital_cities, vegetables, fruits]
+
+print("This is a word guessing game. Your goal is to guess a word from a selected category by entering letters from your keyboard.\nYou can't choose the same letter twice. You can only make a certain amount of guesses. Good luck!\n")
+var choice = chooseCategory()
+var diff = chooseDiff()
+var game = WordGame(categories[choice].randomElement()!, diff)
 game.gameLoop()
