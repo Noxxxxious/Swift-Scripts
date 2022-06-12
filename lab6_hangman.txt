@@ -3,10 +3,102 @@ class WordGame{
   var currWord: String
   var availableLetters: Set<String>
   var guesses: Int 
-  init(_ keyWord: String, _ difficulty: Int){
+  init(_ keyWord: String){
     self.keyWord = keyWord
-    self.currWord = String(repeating: "_", count: keyWord.count)
+    self.currWord = ""
+    for letter in keyWord{
+      if(letter == " "){
+        self.currWord.append(" ")
+      }
+      else{
+        self.currWord.append("_")
+      }
+    }
     self.availableLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    self.guesses = 16 - 2 * difficulty
+    self.guesses = 0
   }
+
+  func gameLoop(){
+    printInfo()
+    chooseDiff()
+    while ((self.currWord != self.keyWord) && self.guesses != 0){
+      print("\n\t\(self.currWord)\n")
+      guess()
+      print("Guesses left: \(self.guesses)")
+    }
+    printResult()
+  }
+
+  func printInfo(){
+  print("This is a word guessing game. Your goal is to guess a word from a selected category by entering letters from your keyboard.\nYou can't choose the same letter twice. You can only make a certain amount of guesses. Good luck!\n")
+  }
+
+  func printResult(){
+    if(self.currWord == self.keyWord){
+      print("\n\t\(self.currWord)\n")
+      print("You win 😎")
+    }
+    else{
+      print("You lose 😔\nThe correct word was:")
+      print("\n\t\(self.keyWord)\n")
+    }
+  }
+
+  func guess(){
+    print("Your guess:", terminator: " ")
+    var input: String
+    repeat{
+      input = readLine()!.uppercased()
+    } while(!validGuess(input))
+    self.availableLetters.remove(input)
+    reveal(input)
+  }
+  
+  func validGuess(_ input: String) -> Bool{
+    if (input.count != 1 || !self.availableLetters.contains(input)){
+      return false
+    }
+    return true
+  }
+
+  func reveal(_ input: String){
+    var contains = false
+    var charInput:Character = " "
+    for char in input{
+      charInput = char
+      break
+    }
+    for(i , letter) in self.keyWord.enumerated(){
+      if(letter == charInput){
+        self.currWord = swapChar(self.currWord, i, charInput)
+        contains = true
+      }
+    }
+    if (!contains){
+      self.guesses -= 1
+    }
+  }
+
+  func swapChar(_ word: String, _ index: Int, _ newChar: Character) -> String {
+    var charArray = Array(word)
+    charArray[index] = newChar 
+    return String(charArray)
+  }
+
+  func chooseDiff(){
+    print("Choose difficulty (1 - easy, 2 - medium, 3 - hard)")
+    var input:String
+    repeat{
+      input = readLine()!
+    } while(!(input == "1" || input == "2" || input == "3"))
+    self.guesses = 16 - 2 * Int(input)!
+  }
+
 }
+
+let countries: [String] = ["PORTUGAL", "SPAIN", "ANDORRA", "FRANCE", "ITALY", "VATICAN CITY", "SAN MARINO", "MONACO", "MALTA", "LUXEMBOURG", "BELGIUM", "NETHERLANDS", "IRELAND", "UNITED KINGDOM", "ICELAND", "DENMARK", "GERMANY", "SWITZERLAND", "LICHTENSTEIN", "AUSTRIA", "SLOVENIA", "CZECH REPUBLIC", "POLAND", "SLOVAKIA", "NORWAY", "SWEDEN", "FINLAND", "ESTONIA", "LATVIA", "LITHUANIA", "UKRAINE", "MOLDOVA", "HUNGARY", "CROATNIA", "BOSNIA AND HERZEGOVINA", "ROMANIA", "BULGARIA", "SERBIA", "NORTH MACEDONIA", "KOSOVO", "MONTENEGRO", "ALBANIA", "GREECE", "TURKEY"]
+let vegetables: [String] = ["CARROT", "TOMATO", "PEPPER", "POTATO", "ONION", "BROCCOLI", "CUCUMBER", "SALAD", "SPINACH"] 
+let categories: [[String]] = [countries, vegetables]
+
+var game = WordGame(countries.randomElement()!)
+game.gameLoop()
